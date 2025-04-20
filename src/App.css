@@ -257,3 +257,129 @@ button:hover {
     min-height: 50vh;
   }
 }
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    height: auto;
+    padding: 1rem 0;
+    text-align: center;
+  }
+
+  .logomenu {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .formimage {
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .form,
+  .svgimage {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .btnvalores {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .valores,
+  .btncalcular {
+    width: 100%;
+    min-width: unset;
+  }
+
+  input[type="number"],
+  input[type="file"],
+  fieldset label {
+    font-size: 0.95rem;
+  }
+
+  button {
+    font-size: 1rem;
+    height: auto;
+    padding: 1rem;
+  }
+
+  .resultado {
+    font-size: 0.95rem;
+    padding: 0.8rem;
+    height: auto;
+    min-height: 16vh;
+  }
+
+  #canvas-wrapper {
+    padding: 20px;
+    min-height: 45vh;
+  }
+
+  .footer {
+    font-size: 0.85rem;
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 16px;
+  }
+
+  .header {
+    height: auto;
+    padding: 1rem 0;
+  }
+
+  .title {
+    font-size: 1.4rem;
+  }
+
+  .logo {
+    height: 28px;
+  }
+
+  .form {
+    padding: 1.5rem;
+  }
+
+  .form label {
+    font-size: 1.1rem;
+  }
+
+  input[type="number"],
+  input[type="file"] {
+    font-size: 1.1rem;
+    padding: 0.75rem;
+  }
+
+  fieldset {
+    padding: 0.8rem;
+    gap: 0.8rem;
+  }
+
+  fieldset label {
+    font-size: 1.05rem;
+  }
+
+  button {
+    font-size: 1.1rem;
+    padding: 1rem;
+    height: auto;
+  }
+
+  .resultado {
+    font-size: 1.05rem;
+    padding: 1rem;
+    min-height: 18vh;
+  }
+
+  .footer {
+    font-size: 1rem;
+    padding: 1rem;
+  }
+}
