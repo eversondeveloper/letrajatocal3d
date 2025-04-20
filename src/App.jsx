@@ -29,12 +29,14 @@ function App() {
 
     const larguraOriginal = parseFloat(elementoSvg.getAttribute("width")) || 0;
     const viewBox = elementoSvg.getAttribute("viewBox").split(" ").map(Number);
-    const fatorEscala = larguraOriginal && viewBox[2] ? larguraOriginal / viewBox[2] : 1;
+    const fatorEscala =
+      larguraOriginal && viewBox[2] ? larguraOriginal / viewBox[2] : 1;
     elementoSvg.removeAttribute("width");
     elementoSvg.removeAttribute("height");
 
     const caixa = elementoSvg.getBBox();
-    const areaTotalBruta = caixa.width * caixa.height * fatorEscala * fatorEscala;
+    const areaTotalBruta =
+      caixa.width * caixa.height * fatorEscala * fatorEscala;
 
     const canvas = canvasElementoReferencia.current;
     const contexto = canvas.getContext("2d");
@@ -65,14 +67,18 @@ function App() {
       URL.revokeObjectURL(imagem.src);
       const dados = contexto.getImageData(0, 0, resolucao, canvas.height).data;
       let contadorPixels = 0;
-      for (let i = 3; i < dados.length; i += 4) if (dados[i] > 0) contadorPixels++;
-      const areaReal = areaTotalBruta * (contadorPixels / (resolucao * canvas.height));
+      for (let i = 3; i < dados.length; i += 4)
+        if (dados[i] > 0) contadorPixels++;
+      const areaReal =
+        areaTotalBruta * (contadorPixels / (resolucao * canvas.height));
       setAreaCalculada(areaReal);
     };
     imagem.src = URL.createObjectURL(blob);
 
     let perimetro = 0;
-    elementoSvg.querySelectorAll("path").forEach((p) => (perimetro += p.getTotalLength() * fatorEscala));
+    elementoSvg
+      .querySelectorAll("path")
+      .forEach((p) => (perimetro += p.getTotalLength() * fatorEscala));
     elementoSvg.querySelectorAll("polygon").forEach((poligono) => {
       const pontos = poligono
         .getAttribute("points")
@@ -95,7 +101,11 @@ function App() {
       return alert("Envie e processe o SVG primeiro.");
     const quantidadeCamadas = Math.ceil(espessuraBase / alturaCamada);
     const volumeBase = areaCalculada * quantidadeCamadas * alturaCamada;
-    const volumePerimetros = perimetroCalculado * larguraExtrusora * alturaObjeto * quantidadePerimetros;
+    const volumePerimetros =
+      perimetroCalculado *
+      larguraExtrusora *
+      alturaObjeto *
+      quantidadePerimetros;
     const volumeTotal = volumeBase + volumePerimetros;
     const areaSecaoFilamento = Math.PI * (diametroFilamento / 2) ** 2;
     const comprimentoFilamento = volumeTotal / areaSecaoFilamento / 1000;
@@ -114,7 +124,8 @@ function App() {
     if (!arquivo) return;
     const leitor = new FileReader();
     leitor.onload = (evento) => {
-      document.getElementById("canvas-container").innerHTML = evento.target.result;
+      document.getElementById("canvas-container").innerHTML =
+        evento.target.result;
       setTimeout(processarSvg, 100);
     };
     leitor.readAsText(arquivo);
@@ -123,99 +134,108 @@ function App() {
   return (
     <div className="container">
       <div className="header">
-        <img src={logo} alt="Letrajato Logo" className="logo" />
-        <span className="title">
-          Orçamentos 3D
-        </span>
+        <div className="logomenu">
+          <img src={logo} alt="Letrajato Logo" className="logo" />
+          <span className="title">Orçamento</span>
+        </div>
       </div>
 
-      <div className="form">
-        <label>Arquivo SVG</label>
-        <input type="file" onChange={lidarComUploadArquivo} />
+      <div className="formimage">
+        <div className="form">
+          <div className="form2">
+            <label>Arquivo SVG</label>
+            <input type="file" onChange={lidarComUploadArquivo} />
 
-        <fieldset>
-          <legend>Altura da peça (Z, mm)</legend>
-          {[10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60].map((valor) => (
-            <label key={valor}>
+            <fieldset>
+              <legend>Altura da peça (Z, mm)</legend>
+              {[10, 20, 30, 40, 50, 60].map((valor) => (
+                <label key={valor}>
+                  <input
+                    type="radio"
+                    name="alturaObjeto"
+                    value={valor}
+                    checked={alturaObjeto === valor}
+                    onChange={() => setAlturaObjeto(valor)}
+                  />
+                  <span>{valor}</span>
+                </label>
+              ))}
+            </fieldset>
+
+            <label>
+              Largura do extrusor (mm)
               <input
-                type="radio"
-                name="alturaObjeto"
-                value={valor}
-                checked={alturaObjeto === valor}
-                onChange={() => setAlturaObjeto(valor)}
+                type="number"
+                value={larguraExtrusora}
+                onChange={(e) => setLarguraExtrusora(+e.target.value)}
               />
-              <span>{valor}</span>
             </label>
-          ))}
-        </fieldset>
 
-        <label>
-          Largura do extrusor (mm)
-          <input
-            type="number"
-            value={larguraExtrusora}
-            onChange={(e) => setLarguraExtrusora(+e.target.value)}
-          />
-        </label>
+            <label>
+              N° de perímetros (shells)
+              <input
+                type="number"
+                value={quantidadePerimetros}
+                onChange={(e) => setQuantidadePerimetros(+e.target.value)}
+              />
+            </label>
 
-        <label>
-          N° de perímetros (shells)
-          <input
-            type="number"
-            value={quantidadePerimetros}
-            onChange={(e) => setQuantidadePerimetros(+e.target.value)}
-          />
-        </label>
+            <label>
+              Espessura do fundo (mm)
+              <input
+                type="number"
+                value={espessuraBase}
+                onChange={(e) => setEspessuraBase(+e.target.value)}
+              />
+            </label>
 
-        <label>
-          Espessura do fundo (mm)
-          <input
-            type="number"
-            value={espessuraBase}
-            onChange={(e) => setEspessuraBase(+e.target.value)}
-          />
-        </label>
+            <label>
+              Diâmetro do filamento (mm)
+              <input
+                type="number"
+                value={diametroFilamento}
+                onChange={(e) => setDiametroFilamento(+e.target.value)}
+              />
+            </label>
 
-        <label>
-          Diâmetro do filamento (mm)
-          <input
-            type="number"
-            value={diametroFilamento}
-            onChange={(e) => setDiametroFilamento(+e.target.value)}
-          />
-        </label>
+            <label>
+              Densidade (g/cm³)
+              <input
+                type="number"
+                value={densidadeFilamento}
+                onChange={(e) => setDensidadeFilamento(+e.target.value)}
+              />
+            </label>
 
-        <label>
-          Densidade (g/cm³)
-          <input
-            type="number"
-            value={densidadeFilamento}
-            onChange={(e) => setDensidadeFilamento(+e.target.value)}
-          />
-        </label>
+            <label>
+              Preço por kg (R$)
+              <input
+                type="number"
+                value={precoPorQuilo}
+                onChange={(e) => setPrecoPorQuilo(+e.target.value)}
+              />
+            </label>
 
-        <label>
-          Preço por kg (R$)
-          <input
-            type="number"
-            value={precoPorQuilo}
-            onChange={(e) => setPrecoPorQuilo(+e.target.value)}
-          />
-        </label>
+            <button onClick={calcularGastoFilamento}>Calcular Consumo</button>
+            <div className="resultado">{mensagemResultado}</div>
+          </div>
+        </div>
+        <div className="svgimage">
+          <div id="canvas-wrapper">
+            <div className="wrapper-cota-h"></div>
+            <div className="wrapper-cota-v"></div>
+            <div id="canvas-container"></div>
+            <div id="wrapper-label-w" className="wrapper-label-h"></div>
+            <div id="wrapper-label-h" className="wrapper-label-v"></div>
+          </div>
 
-        <button onClick={calcularGastoFilamento}>Calcular Consumo</button>
-        <div className="resultado">{mensagemResultado}</div>
+          <canvas
+            ref={canvasElementoReferencia}
+            style={{ display: "none" }}
+          ></canvas>
+        </div>
       </div>
-
-      <div id="canvas-wrapper">
-        <div className="wrapper-cota-h"></div>
-        <div className="wrapper-cota-v"></div>
-        <div id="canvas-container"></div>
-        <div id="wrapper-label-w" className="wrapper-label-h"></div>
-        <div id="wrapper-label-h" className="wrapper-label-v"></div>
-      </div>
-
-      <canvas ref={canvasElementoReferencia} style={{ display: "none" }}></canvas>
+      <div className="footer">Desenvolvido por LetraJato 2025</div>
     </div>
   );
 }
