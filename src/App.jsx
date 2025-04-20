@@ -1,7 +1,8 @@
 // App.jsx
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useState, useCallback, useEffect } from "react";
 import "./App.css";
 import logo from "/logo.png";
+import Switch from "./components/Switch";
 
 function App() {
   const canvasElementoReferencia = useRef(null);
@@ -13,12 +14,26 @@ function App() {
   const [espessuraBase, setEspessuraBase] = useState(0);
   const [diametroFilamento, setDiametroFilamento] = useState(1.75);
   const [densidadeFilamento, setDensidadeFilamento] = useState(1.27);
-  const [precoPorQuilo, setPrecoPorQuilo] = useState(90);
+  const [precoPorQuilo, setPrecoPorQuilo] = useState(1000);
+  const [precoPorQuiloCliente] = useState(1000);
+  const [precoPorQuiloParceiro] = useState(650);
 
   const [areaCalculada, setAreaCalculada] = useState(0);
   const [perimetroCalculado, setPerimetroCalculado] = useState(0);
   const [contadorEstimativa, setContadorEstimativa] = useState(1);
   const [mensagemResultado, setMensagemResultado] = useState("");
+
+  const [btnSwitch, setBtnSwitch] = useState(false);
+
+  useEffect(() => {
+    if (btnSwitch) {
+      setPrecoPorQuilo(precoPorQuiloParceiro);
+      calcularGastoFilamento();
+    } else {
+      setPrecoPorQuilo(precoPorQuiloCliente);
+      calcularGastoFilamento();
+    }
+  }, [btnSwitch, precoPorQuilo, precoPorQuiloCliente, precoPorQuiloParceiro]);
 
   const alturaCamada = 0.55;
 
@@ -97,8 +112,8 @@ function App() {
   }, []);
 
   const calcularGastoFilamento = () => {
-    if (!svgReferencia.current || areaCalculada <= 0)
-      return alert("Envie e processe o SVG primeiro.");
+    // if (!svgReferencia.current || areaCalculada <= 0)
+    //   return alert("Envie e processe o SVG primeiro.");
     const quantidadeCamadas = Math.ceil(espessuraBase / alturaCamada);
     const volumeBase = areaCalculada * quantidadeCamadas * alturaCamada;
     const volumePerimetros =
@@ -111,9 +126,9 @@ function App() {
     const comprimentoFilamento = volumeTotal / areaSecaoFilamento / 1000;
     const pesoFinal = (volumeTotal / 1000) * densidadeFilamento;
     const custoTotal = (pesoFinal / 1000) * precoPorQuilo;
-    setContadorEstimativa((anterior) => anterior + 1);
+    // setContadorEstimativa((anterior) => anterior + 1);
     setMensagemResultado(
-      `Estimativa ${contadorEstimativa}\n\nComprimento: ${comprimentoFilamento.toFixed(
+      `Comprimento: ${comprimentoFilamento.toFixed(
         2
       )} m\nPeso: ${pesoFinal.toFixed(2)} g\nCusto: R$ ${custoTotal.toFixed(2)}`
     );
@@ -161,63 +176,67 @@ function App() {
                 </label>
               ))}
             </fieldset>
+            <div className="btnvalores">
+              <div className="valores">
+                <label>
+                  Largura do extrusor (mm)
+                  <input
+                    type="number"
+                    value={larguraExtrusora}
+                    onChange={(e) => setLarguraExtrusora(+e.target.value)}
+                  />
+                </label>
 
-            <label>
-              Largura do extrusor (mm)
-              <input
-                type="number"
-                value={larguraExtrusora}
-                onChange={(e) => setLarguraExtrusora(+e.target.value)}
-              />
-            </label>
+                <label>
+                  N° de perímetros (shells)
+                  <input
+                    type="number"
+                    value={quantidadePerimetros}
+                    onChange={(e) => setQuantidadePerimetros(+e.target.value)}
+                  />
+                </label>
 
-            <label>
-              N° de perímetros (shells)
-              <input
-                type="number"
-                value={quantidadePerimetros}
-                onChange={(e) => setQuantidadePerimetros(+e.target.value)}
-              />
-            </label>
+                <label>
+                  Espessura do fundo (mm)
+                  <input
+                    type="number"
+                    value={espessuraBase}
+                    onChange={(e) => setEspessuraBase(+e.target.value)}
+                  />
+                </label>
 
-            <label>
-              Espessura do fundo (mm)
-              <input
-                type="number"
-                value={espessuraBase}
-                onChange={(e) => setEspessuraBase(+e.target.value)}
-              />
-            </label>
+                <label>
+                  Diâmetro do filamento (mm)
+                  <input
+                    type="number"
+                    value={diametroFilamento}
+                    onChange={(e) => setDiametroFilamento(+e.target.value)}
+                  />
+                </label>
 
-            <label>
-              Diâmetro do filamento (mm)
-              <input
-                type="number"
-                value={diametroFilamento}
-                onChange={(e) => setDiametroFilamento(+e.target.value)}
-              />
-            </label>
+                <label>
+                  Densidade (g/cm³)
+                  <input
+                    type="number"
+                    value={densidadeFilamento}
+                    onChange={(e) => setDensidadeFilamento(+e.target.value)}
+                  />
+                </label>
 
-            <label>
-              Densidade (g/cm³)
-              <input
-                type="number"
-                value={densidadeFilamento}
-                onChange={(e) => setDensidadeFilamento(+e.target.value)}
-              />
-            </label>
+                {/* <label>
+                Preço por kg (R$)
+                <input
+                  type="number"
+                  value={precoPorQuilo}
+                  onChange={(e) => setPrecoPorQuilo(+e.target.value)}
+                />
+              </label> */}
+              </div>
 
-            <label>
-              Preço por kg (R$)
-              <input
-                type="number"
-                value={precoPorQuilo}
-                onChange={(e) => setPrecoPorQuilo(+e.target.value)}
-              />
-            </label>
-
-            <button onClick={calcularGastoFilamento}>Calcular Consumo</button>
-            <div className="resultado">{mensagemResultado}</div>
+              <div className="btncalcular">
+                <button onClick={calcularGastoFilamento}>Calcular</button>
+              </div>
+            </div>
           </div>
         </div>
         <div className="svgimage">
@@ -233,6 +252,10 @@ function App() {
             ref={canvasElementoReferencia}
             style={{ display: "none" }}
           ></canvas>
+          <div className="resultado">
+            {mensagemResultado}
+            {<Switch btnSwitch={btnSwitch} setBtnSwitch={setBtnSwitch} />}
+          </div>
         </div>
       </div>
       <div className="footer">Desenvolvido por LetraJato 2025</div>
