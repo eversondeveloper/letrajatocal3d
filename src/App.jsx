@@ -151,7 +151,7 @@ function App() {
       <div className="header">
         <div className="logomenu">
           <img src={logo} alt="Letrajato Logo" className="logo" />
-          <span className="title">Orçamento</span>
+          <span className="title">Orçamentos Cal3D</span>
         </div>
       </div>
 
